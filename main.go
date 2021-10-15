@@ -24,12 +24,17 @@ var (
 func main() {
 	flag.Parse()
 
+	log.Print("Opening Frame Buffer")
 	fb, err := framebuffer.Open(*fFB)
 	if err != nil {
 		panic(err)
 	}
-	defer fb.Close()
+	defer func() {
+		log.Print("Closing Frame Buffer")
+		fb.Close()
+	}()
 
+	log.Print("Reading files")
 	fileInfo, err := os.ReadDir(*fFolder)
 	if err != nil {
 		panic(err)
@@ -42,6 +47,8 @@ func main() {
 			info.Type()
 		}
 	}
+
+	log.Print("Starting slideshow")
 
 	black := image.NewUniform(color.RGBA{0, 0, 0, 255})
 	draw.Draw(fb, fb.Bounds(), black, image.Point{}, draw.Src)
